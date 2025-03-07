@@ -8,6 +8,7 @@ defmodule SvotWeb.Router do
     plug :put_root_layout, html: {SvotWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
   end
 
   pipeline :api do
@@ -24,6 +25,18 @@ defmodule SvotWeb.Router do
   # scope "/api", SvotWeb do
   #   pipe_through :api
   # end
+
+  defp fetch_current_user(conn, _) do
+    if user_uuid = get_session(conn, :current_uuid) do
+      assign(conn, :current_uuid, user_uuid)
+    else
+      new_uuid = Ecto.UUID.generate()
+
+      conn
+      |> assign(:current_uuid, new_uuid)
+      |> put_session(:current_uuid, new_uuid)
+    end
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:svot, :dev_routes) do

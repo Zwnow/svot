@@ -9,6 +9,7 @@ defmodule Svot.Income do
     field :interval, Ecto.Enum, values: [:single, :daily, :weekly, :bi_weekly, :monthly, :quarterly, :halfyearly, :yearly]
 
     belongs_to :user, Svot.User
+    has_many :income, Svot.IncomeCategory
 
     timestamps(type: :utc_datetime)
   end
