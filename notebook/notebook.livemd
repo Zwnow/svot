@@ -1,0 +1,27 @@
+# S.V.O.T.
+
+```elixir
+Mix.install(
+  [
+    {:svot, path: Path.join(__DIR__, ".."), env: :dev}
+  ],
+  config_path: :svot,
+  lockfile: :svot
+)
+```
+
+## Goal
+
+### S.V.O.T.
+
+(S)eek<br>(V)alue<br>(O)pportunities<br>(T)actically<br><br>
+The goal of the app is to provide a system for financial planning.<br>
+
+* Track expenses & income
+* Calculate credits
+* Define saving goals
+* Document storage for invoices
+
+#### Design principle
+
+It should be simple. Nobody wants to spend their time managing some expense tracking app. Open it, create an entry, close it. More detailed views by choice. Mobile first design.
