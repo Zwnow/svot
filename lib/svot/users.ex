@@ -2,12 +2,29 @@ defmodule Svot.Users do
   alias Svot.{User, Repo}
 
   def create_user(attrs) do
-    attrs
-    |> User.changeset()
+    %User{}
+    |> User.changeset(attrs)
     |> Repo.insert()
-    |> case do
-      {:ok, _user} -> :ok
-      {:error, _changeset} -> :error
+  end
+
+  def get_user(user_id) do
+    Repo.get(User, user_id)
+  end
+
+  def update_user(user_id, attrs) do
+    case get_user(user_id) do
+      nil -> {:error, "User not found"}
+      user ->
+        user
+        |> User.changeset(attrs)
+        |> Repo.update()
+    end
+  end
+
+  def delete_user(user_id) do
+    case get_user(user_id) do
+      nil -> {:error, "User not found"}
+      user -> Repo.delete(user)
     end
   end
 end

@@ -15,8 +15,8 @@ defmodule Svot.Expense do
 
   def changeset(%Svot.Expense{} = expense, attrs \\ %{}) do
     expense
-    |> cast(attrs, [:title, :user_id, :description, :amount, :interval])
-    |> validate_required([:title, :user_id, :interval, :amount])
+    |> cast(attrs, [:title, :description, :amount, :interval])
+    |> validate_required([:title, :interval, :amount])
     |> validate_number(:amount, greater_than: 0)
   end
 end
