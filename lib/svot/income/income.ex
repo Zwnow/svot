@@ -1,5 +1,5 @@
 defmodule Svot.Income do
-  use Ecto.Schema
+  use Svot.Schema
   import Ecto.Changeset
 
   schema "income" do
@@ -8,7 +8,7 @@ defmodule Svot.Income do
     field :amount, :decimal
     field :interval, Ecto.Enum, values: [:single, :daily, :weekly, :bi_weekly, :monthly, :quarterly, :halfyearly, :yearly]
 
-    belongs_to :user, Svot.User
+    belongs_to :user, Svot.User, foreign_key: :user_uuid, references: :uuid, type: :binary_id
     has_many :income, Svot.IncomeCategory
 
     timestamps(type: :utc_datetime)
@@ -16,8 +16,8 @@ defmodule Svot.Income do
 
   def changeset(%Svot.Income{} = income, attrs \\ %{}) do
     income 
-    |> cast(attrs, [:title, :user_id, :description, :amount, :interval])
-    |> validate_required([:title, :user_id, :interval, :amount])
+    |> cast(attrs, [:title, :user_uuid, :description, :amount, :interval])
+    |> validate_required([:title, :user_uuid, :interval, :amount])
     |> validate_number(:amount, greater_than: 0)
   end
 end

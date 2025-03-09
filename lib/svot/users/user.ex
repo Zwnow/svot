@@ -1,5 +1,5 @@
 defmodule Svot.User do
-  use Ecto.Schema
+  use Svot.Schema
   import Ecto.Changeset
 
   schema "users" do

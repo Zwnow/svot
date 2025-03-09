@@ -1,5 +1,5 @@
 defmodule Svot.Expense do
-  use Ecto.Schema
+  use Svot.Schema
   import Ecto.Changeset
 
   schema "expenses" do
@@ -8,7 +8,7 @@ defmodule Svot.Expense do
     field :amount, :decimal
     field :interval, Ecto.Enum, values: [:single, :daily, :weekly, :bi_weekly, :monthly, :quarterly, :halfyearly, :yearly]
 
-    belongs_to :user, Svot.User
+    belongs_to :user, Svot.User, foreign_key: :user_uuid, references: :uuid, type: :binary_id
     has_many :category, Svot.ExpenseCategory
 
     timestamps(type: :utc_datetime)

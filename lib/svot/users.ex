@@ -7,12 +7,12 @@ defmodule Svot.Users do
     |> Repo.insert()
   end
 
-  def get_user(user_id) do
-    Repo.get(User, user_id)
+  def get_user(user_uuid) do
+    Repo.get(User, user_uuid)
   end
 
-  def update_user(user_id, attrs) do
-    case get_user(user_id) do
+  def update_user(user_uuid, attrs) do
+    case get_user(user_uuid) do
       nil -> {:error, "User not found"}
       user ->
         user
@@ -21,8 +21,8 @@ defmodule Svot.Users do
     end
   end
 
-  def delete_user(user_id) do
-    case get_user(user_id) do
+  def delete_user(user_uuid) do
+    case get_user(user_uuid) do
       nil -> {:error, "User not found"}
       user -> Repo.delete(user)
     end

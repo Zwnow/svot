@@ -2,10 +2,10 @@ defmodule Svot.Categories do
   import Ecto.{Changeset, Query}
   alias Svot.{Category, ExpenseCategory, IncomeCategory, Repo}
 
-  def create_category(attrs, user_id) do
+  def create_category(attrs, user_uuid) do
     %Category{}
     |> Category.changeset(attrs)
-    |> put_change(:user_id, user_id)
+    |> put_change(:user_uuid, user_uuid)
     |> Repo.insert()
   end
 
@@ -19,12 +19,12 @@ defmodule Svot.Categories do
     |> Repo.insert()
   end
 
-  def get_category(id, user_id) do
-    Repo.get_by(Category, id: id, user_id: user_id)
+  def get_category(id, user_uuid) do
+    Repo.get_by(Category, uuid: id, user_uuid: user_uuid)
   end
 
-  def update_category(id, user_id, attrs) do
-    case get_category(id, user_id) do
+  def update_category(id, user_uuid, attrs) do
+    case get_category(id, user_uuid) do
       nil -> {:error, "Category not found"}
       category ->
         category
@@ -33,12 +33,12 @@ defmodule Svot.Categories do
     end
   end
 
-  def list_user_categories(user_id) do
-    Repo.all(from c in Category, where: c.user_id == ^user_id, order_by: [desc: c.inserted_at])
+  def list_user_categories(user_uuid) do
+    Repo.all(from c in Category, where: c.user_uuid == ^user_uuid, order_by: [desc: c.inserted_at])
   end
 
-  def delete_category(id, user_id) do
-    case get_category(id, user_id) do
+  def delete_category(id, user_uuid) do
+    case get_category(id, user_uuid) do
       nil -> {:error, "Category not found"}
       category -> Repo.delete(category)
     end

@@ -11,6 +11,9 @@ config :svot,
   ecto_repos: [Svot.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :svot, Svot.Repo, migration_primary_key: [name: :uuid, type: :binary_id]
+config :svot, Svot.Repo, migration_foreign_key: [column: :uuid, type: :binary_id]
+
 # Configures the endpoint
 config :svot, SvotWeb.Endpoint,
   url: [host: "localhost"],

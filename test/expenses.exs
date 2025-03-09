@@ -15,7 +15,7 @@ defmodule Svot.ExpensesTest do
 
     user = create_test_user()
 
-    assert {:ok, expense} = Expenses.create_expense(attrs, user.id)
+    assert {:ok, expense} = Expenses.create_expense(attrs, user.uuid)
     assert expense.amount == Decimal.new("123.45")
     assert expense.title == "Test Expense"
     assert expense.description == "Some expense I made along the way"
@@ -31,7 +31,7 @@ defmodule Svot.ExpensesTest do
     }
     user = create_test_user()
 
-    assert {:error, _} = Expenses.create_expense(attrs, user.id)
+    assert {:error, _} = Expenses.create_expense(attrs, user.uuid)
   end
 
   test "update_expense" do
@@ -44,11 +44,11 @@ defmodule Svot.ExpensesTest do
       interval: "single"
     }
 
-    assert {:ok, expense} = Expenses.create_expense(attrs, user.id)
+    assert {:ok, expense} = Expenses.create_expense(attrs, user.uuid)
 
-    new_expense = %{ id: expense.id, amount: 234.45 }
+    new_expense = %{ uuid: expense.uuid, amount: 234.45 }
 
-    assert {:ok, new_expense} = Expenses.update_expense(expense.id, user.id, new_expense)
+    assert {:ok, new_expense} = Expenses.update_expense(expense.uuid, user.uuid, new_expense)
 
     assert new_expense.amount == Decimal.new("234.45")
     assert new_expense.title == "Test Expense"
