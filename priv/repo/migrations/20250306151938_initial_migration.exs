@@ -1,11 +1,34 @@
 defmodule Svot.Repo.Migrations.InitialMigration do
   use Ecto.Migration
+  # Setup
+  # Postgres requires citext:
+  
+  # sudo -u postgres psql -d svot_test -c "CREATE EXTENSION citext;"
+  # sudo -u postgres psql -d svot_dev -c "CREATE EXTENSION citext;"
 
   def change do
-    create table "users" do
+    create table(:users) do
+      add :email, :citext, null: false
       add :username, :string, null: false
-      timestamps()
+      add :hashed_password, :string, null: false
+      add :confirmed_at, :utc_datetime
+
+      timestamps(type: :utc_datetime)
     end
+
+    create unique_index(:users, [:email])
+
+    create table(:users_tokens) do
+      add :user_uuid, references(:users, column: :uuid, type: :binary_id,  on_delete: :delete_all), null: false
+      add :token, :binary, null: false
+      add :context, :string, null: false
+      add :sent_to, :string
+
+      timestamps(type: :utc_datetime, updated_at: false)
+    end
+
+    create index(:users_tokens, [:user_uuid])
+    create unique_index(:users_tokens, [:context, :token])
 
     create table "categories" do
       add :title, :string, null: false
@@ -42,8 +65,6 @@ defmodule Svot.Repo.Migrations.InitialMigration do
       add :income_uuid, references(:income, column: :uuid, type: :binary_id, on_delete: :delete_all), null: false
       add :category_uuid, references(:categories, column: :uuid, type: :binary_id, on_delete: :delete_all), null: false
     end
-
-    create unique_index(:users, [:username])
 
     create index(:expenses, [:user_uuid])
     create index(:income, [:user_uuid])
