@@ -11,6 +11,10 @@ defmodule Svot.Users do
     Repo.get(User, user_uuid)
   end
 
+  def get_user_by_name(name) do
+    Repo.get_by(User, username: name)
+  end
+
   def update_user(user_uuid, attrs) do
     case get_user(user_uuid) do
       nil -> {:error, "User not found"}

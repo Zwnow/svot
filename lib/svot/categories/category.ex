@@ -12,7 +12,7 @@ defmodule Svot.Category do
 
   def changeset(%Svot.Category{} = category, attrs \\ %{}) do
     category
-    |> cast(attrs, [:title, :user_uuid])
-    |> validate_required([:title, :user_uuid])
+    |> cast(attrs, [:title])
+    |> validate_required([:title])
   end
 end

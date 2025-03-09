@@ -16,8 +16,8 @@ defmodule Svot.Income do
 
   def changeset(%Svot.Income{} = income, attrs \\ %{}) do
     income 
-    |> cast(attrs, [:title, :user_uuid, :description, :amount, :interval])
-    |> validate_required([:title, :user_uuid, :interval, :amount])
+    |> cast(attrs, [:title, :description, :amount, :interval])
+    |> validate_required([:title, :interval, :amount])
     |> validate_number(:amount, greater_than: 0)
   end
 end

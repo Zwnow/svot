@@ -57,6 +57,23 @@ defmodule Svot.ExpensesTest do
 
   end
 
+  test "invalid_update_expense" do
+    user = create_test_user()
+
+    attrs = %{
+      title: "Test Expense", 
+      description: "Some expense I made along the way",
+      amount: 123.45,
+      interval: "single"
+    }
+
+    assert {:ok, expense} = Expenses.create_expense(attrs, user.uuid)
+
+    new_expense = %{ uuid: expense.uuid, amount: 0 }
+
+    assert {:error, _} = Expenses.update_expense(expense.uuid, user.uuid, new_expense)
+  end
+
   defp create_test_user() do
     user = %{username: "Zwnow"}
     {:ok, user} = Users.create_user(user)

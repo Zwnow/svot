@@ -10,12 +10,12 @@ defmodule Svot.Categories do
   end
 
   def bind_expense_category(expense_id, category_id) do
-    %ExpenseCategory{expense: expense_id, category: category_id}
+    %ExpenseCategory{expense_uuid: expense_id, category_uuid: category_id}
     |> Repo.insert()
   end
 
   def bind_income_category(income_id, category_id) do
-    %IncomeCategory{income: income_id, category: category_id}
+    %IncomeCategory{income_uuid: income_id, category_uuid: category_id}
     |> Repo.insert()
   end
 
