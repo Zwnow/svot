@@ -21,10 +21,6 @@ defmodule SvotWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    get "/login", LoginController , :index
-    post "/login", LoginController , :login
-    get "/register", RegisterController, :index
-    post "/register", RegisterController, :create
   end
 
   # Other scopes may use custom stacks.

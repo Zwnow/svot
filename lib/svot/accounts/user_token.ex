@@ -170,10 +170,10 @@ defmodule Svot.Accounts.UserToken do
   Gets all tokens for the given user for the given contexts.
   """
   def by_user_and_contexts_query(user, :all) do
-    from t in UserToken, where: t.user_id == ^user.uuid
+    from t in UserToken, where: t.user_uuid == ^user.uuid
   end
 
   def by_user_and_contexts_query(user, [_ | _] = contexts) do
-    from t in UserToken, where: t.user_id == ^user.uuid and t.context in ^contexts
+    from t in UserToken, where: t.user_uuid == ^user.uuid and t.context in ^contexts
   end
 end

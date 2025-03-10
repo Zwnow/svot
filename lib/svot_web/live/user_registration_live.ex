@@ -29,7 +29,7 @@ defmodule SvotWeb.UserRegistrationLive do
       >
         <.error :if={@check_errors}>
           Oops, something went wrong! Please check the errors below.
-        </.error>
+        </.error>                         17 
 
         <.input field={@form[:email]} type="email" label="Email" required />
         <.input field={@form[:username]} type="text" label="Username" required />
@@ -64,7 +64,11 @@ defmodule SvotWeb.UserRegistrationLive do
           )
 
         changeset = Accounts.change_user_registration(user)
-        {:noreply, socket |> assign(trigger_submit: true) |> assign_form(changeset)}
+        {:noreply, 
+          socket 
+          |> assign(trigger_submit: true) 
+          |> assign_form(changeset)
+        }
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, socket |> assign(check_errors: true) |> assign_form(changeset)}
