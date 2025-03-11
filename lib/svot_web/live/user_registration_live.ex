@@ -29,7 +29,7 @@ defmodule SvotWeb.UserRegistrationLive do
       >
         <.error :if={@check_errors}>
           Oops, something went wrong! Please check the errors below.
-        </.error>                         17 
+        </.error>
 
         <.input field={@form[:email]} type="email" label="Email" required />
         <.input field={@form[:username]} type="text" label="Username" required />
