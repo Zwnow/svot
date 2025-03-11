@@ -25,7 +25,9 @@ defmodule Svot.Categories do
 
   def update_category(id, user_uuid, attrs) do
     case get_category(id, user_uuid) do
-      nil -> {:error, "Category not found"}
+      nil ->
+        {:error, "Category not found"}
+
       category ->
         category
         |> Category.changeset(attrs)
@@ -34,7 +36,9 @@ defmodule Svot.Categories do
   end
 
   def list_user_categories(user_uuid) do
-    Repo.all(from c in Category, where: c.user_uuid == ^user_uuid, order_by: [desc: c.inserted_at])
+    Repo.all(
+      from c in Category, where: c.user_uuid == ^user_uuid, order_by: [desc: c.inserted_at]
+    )
   end
 
   def delete_category(id, user_uuid) do

@@ -17,7 +17,11 @@ defmodule Svot.Accounts.UserToken do
     field :token, :binary
     field :context, :string
     field :sent_to, :string
-    belongs_to :user, Svot.Accounts.User, references: :uuid, foreign_key: :user_uuid, type: :binary_id
+
+    belongs_to :user, Svot.Accounts.User,
+      references: :uuid,
+      foreign_key: :user_uuid,
+      type: :binary_id
 
     timestamps(type: :utc_datetime, updated_at: false)
   end

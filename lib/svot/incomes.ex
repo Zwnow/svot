@@ -15,7 +15,9 @@ defmodule Svot.Incomes do
 
   def update_income(id, user_uuid, attrs) do
     case get_income(id, user_uuid) do
-      nil -> {:error, "Income not found"}
+      nil ->
+        {:error, "Income not found"}
+
       income ->
         income
         |> Income.changeset(attrs)

@@ -4,9 +4,9 @@ defmodule Svot.Expenses do
 
   def create_expense(attrs, user_uuid) do
     %Expense{}
-      |> Expense.changeset(attrs)
-      |> put_change(:user_uuid, user_uuid)
-      |> Repo.insert()
+    |> Expense.changeset(attrs)
+    |> put_change(:user_uuid, user_uuid)
+    |> Repo.insert()
   end
 
   def get_expense(id, user_uuid) do
@@ -15,7 +15,9 @@ defmodule Svot.Expenses do
 
   def update_expense(id, user_uuid, attrs) do
     case get_expense(id, user_uuid) do
-      nil -> {:error, "Expense not found"}
+      nil ->
+        {:error, "Expense not found"}
+
       expense ->
         expense
         |> Expense.changeset(attrs)

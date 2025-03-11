@@ -71,7 +71,7 @@ defmodule SvotWeb.UserRegistrationLiveTest do
     end
   end
 
-  #describe "registration navigation" do
+  # describe "registration navigation" do
   #  test "redirects to login page when the Log in button is clicked", %{conn: conn} do
   #    {:ok, lv, _html} = live(conn, ~p"/users/register")
 
@@ -83,5 +83,5 @@ defmodule SvotWeb.UserRegistrationLiveTest do
 
   #    assert login_html =~ "Log in"
   #  end
-  #end
+  # end
 end
