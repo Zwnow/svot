@@ -1,5 +1,6 @@
 defmodule SvotWeb.ExpensesLive do
   use SvotWeb, :live_view
+  alias Svot.{Expense}
 
   def render(assigns) do
     ~H"""
@@ -21,47 +22,56 @@ defmodule SvotWeb.ExpensesLive do
             show={@show_modal}
             on_cancel={JS.push("close_modal")}
           >
-            <form phx-submit="save_expense">
+            <.simple_form 
+              for={@expense_form}
+              id="create_expense_form"
+              phx-change="validate_create_expense"
+              method="post"
+              phx-submit="save_expense">
               <fieldset class="flex w-full flex-col">
                 <label for="title">Titel</label>
-                <input
+                <.input
                   class="p-2 rounded-md w-full border border-slate-700"
                   type="text"
                   id="title"
                   name="title"
+                  field={@expense_form[:title]}
                   required
                 />
               </fieldset>
               <fieldset class="flex w-full flex-col">
                 <label for="amount">Betrag</label>
-                <input
+                <.input
                   class="p-2 rounded-md border w-full border-slate-700"
                   type="number"
                   id="amount"
                   name="amount"
                   step="0.01"
+                  field={@expense_form[:amount]}
                   placeholder="0.00 €"
                   required
                 />
               </fieldset>
               <fieldset class="flex flex-col w-full">
                 <label for="interval">Interval</label>
-                <select
+                <.input
                   class="p-2 rounded-md border w-full border-slate-700"
                   id="interval"
                   name="interval"
-                >
-                  <option value="single" selected>Einzel</option>
-                  <option value="daily">Täglich</option>
-                  <option value="weekly">Wöchentl.</option>
-                  <option value="bi_weekly">Vierzehntägl.</option>
-                  <option value="monthly">Monatl.</option>
-                  <option value="quarterly">3-Monatl.</option>
-                  <option value="halfyearly">6-Monatl.</option>
-                  <option value="yearly">Jährlich</option>
-                </select>
+                  type="select"
+                  options={[
+                    "Einzel": "single", 
+                    "Täglich": "daily",
+                    "Wöchentl.": "weekly",
+                    "Vierzehntägl.": "bi_weekly",
+                    "Monatl.": "monthly",
+                    "3-Monatl.": "quarterly",
+                    "6-Monatl.": "halfyearly",
+                    "Jährlich": "yearly"
+                  ]}
+                  field={@expense_form[:interval]}
+                />
               </fieldset>
-
               <div class="flex flex-row p-4 gap-2 w-full justify-evenly items-center">
                 <button
                   phx-click="close_modal"
@@ -76,7 +86,7 @@ defmodule SvotWeb.ExpensesLive do
                   Speichern
                 </button>
               </div>
-            </form>
+            </.simple_form>
           </.modal>
         </div>
 
@@ -95,10 +105,15 @@ defmodule SvotWeb.ExpensesLive do
   end
 
   def mount(_params, _session, socket) do
+    changeset = 
+      Expense.changeset(%Expense{})
+
+
     socket =
       socket
       |> assign(:expenses, [])
       |> assign(:show_modal, false)
+      |> assign_form(changeset)
       |> then(fn socket ->
         if connected?(socket) do
           expenses = Svot.Expenses.list_user_expenses(socket.assigns.current_user.uuid)
@@ -108,7 +123,7 @@ defmodule SvotWeb.ExpensesLive do
         end
       end)
 
-    {:ok, socket}
+    {:ok, socket, temporary_assigns: [form: nil]}
   end
 
   def handle_event("open_modal", _, socket) do
@@ -119,9 +134,29 @@ defmodule SvotWeb.ExpensesLive do
     {:noreply, assign(socket, show_modal: false)}
   end
 
+  def handle_event("validate_create_expense", attrs, socket) do
+    changeset = Expense.changeset(%Expense{}, attrs)
+    {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
+  end
+
   def handle_event("save_expense", attrs, socket) do
     Svot.Expenses.create_expense(attrs, socket.assigns.current_user.uuid);
     expenses = Svot.Expenses.list_user_expenses(socket.assigns.current_user.uuid)
+    changeset = Expense.changeset(%Expense{})
+
+    socket =
+      socket
+      |> assign_form(changeset)
     {:noreply, assign(socket, expenses: expenses, show_modal: false)}
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    form = to_form(changeset, as: "expense")
+
+    if changeset.valid? do
+      assign(socket, expense_form: form, check_errors: false)
+    else
+      assign(socket, expense_form: form)
+    end
   end
 end
