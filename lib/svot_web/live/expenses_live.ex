@@ -33,21 +33,21 @@ alias Svot.ExpenseCategory
     ~H"""
     <div class="flex flex-col justify-center items-center">
       <div class="flex flex-row gap-4 w-full justify-center items-center">
-        <button phx-click="open_modal" class="rounded-md shadow-md bg-slate-700 p-2 text-white">
+        <button phx-click="open_modal_expense" class="rounded-md shadow-md bg-slate-700 p-2 text-white">
           + Ausgabe
         </button>
         <.create_category_modal {assigns} />
       </div>
       <.modal
-        :if={@show_modal}
+        :if={@show_modal.expense}
         id="create_expense"
-        show={@show_modal}
+        show={@show_modal.expense}
         on_cancel={JS.push("close_modal")}
       >
         <.form
           for={@expense_form}
           id="create_expense_form"
-          phx-change="validate"
+          phx-change="validate_expense"
           method="post"
           phx-submit="save_expense"
         >
@@ -55,7 +55,7 @@ alias Svot.ExpenseCategory
             Ausgabe hinzufügen
           </.header>
 
-          <.error :if={@check_errors}>
+          <.error :if={@check_errors.expense}>
             Fehler beim Übertragen der Daten ...
           </.error>
           <.input
@@ -130,14 +130,14 @@ alias Svot.ExpenseCategory
   def create_category_modal(assigns) do
     ~H"""
     <div class="flex flex-col justify-center items-center z-[50]">
-      <button phx-click="open_category_modal" type="button" class="rounded-md shadow-md bg-slate-700 p-2 text-white">
+      <button phx-click="open_modal_category" type="button" class="rounded-md shadow-md bg-slate-700 p-2 text-white">
         + Kategorie
       </button>
       <.modal
-        :if={@show_category_modal}
+        :if={@show_modal.category}
         id="create_category"
-        show={@show_category_modal}
-        on_cancel={JS.push("close_category_modal")}
+        show={@show_modal.category}
+        on_cancel={JS.push("close_modal")}
         >
         <.form
           for={@category_form}
@@ -150,7 +150,7 @@ alias Svot.ExpenseCategory
             Kategorie hinzufügen
           </.header>
 
-          <.error :if={@check_category_errors}>
+          <.error :if={@check_errors.category}>
             Die Kategorie existiert bereits!
           </.error>
           <.input
@@ -163,7 +163,7 @@ alias Svot.ExpenseCategory
           />
          <div class="flex flex-row p-4 gap-2 w-full justify-evenly items-center">
             <button
-              phx-click="close_category_modal"
+              phx-click="close_modal"
               type="button"
               class="rounded-md shadow-md bg-red-700 p-2 text-white"
               >
@@ -190,10 +190,8 @@ alias Svot.ExpenseCategory
       socket
       |> assign(:expenses, [])
       |> assign(:categories, [])
-      |> assign(:check_errors, false)
-      |> assign(:check_category_errors, false)
-      |> assign(:show_modal, false)
-      |> assign(:show_category_modal, false)
+      |> assign(:check_errors, %{category: false, expense: false})
+      |> assign(:show_modal, %{category: false, expense: false})
       |> assign_expense_form(expense_changeset)
       |> assign_category_form(category_changeset)
       |> then(fn socket ->
@@ -209,23 +207,19 @@ alias Svot.ExpenseCategory
     {:ok, socket}
   end
 
-  def handle_event("open_modal", _, socket) do
-    {:noreply, assign(socket, show_modal: true)}
+  def handle_event("open_modal_" <> name, _, socket) do
+    case name do
+      "category" -> {:noreply, assign(socket, show_modal: %{category: true, expense: false})}
+      "expense" -> {:noreply, assign(socket, show_modal: %{category: false, expense: true})}
+      _ -> {:noreply, socket}
+    end
   end
 
   def handle_event("close_modal", _, socket) do
-    {:noreply, assign(socket, show_modal: false)}
+    {:noreply, assign(socket, show_modal: %{category: false, expense: false})}
   end
 
-  def handle_event("open_category_modal", _, socket) do
-    {:noreply, assign(socket, show_category_modal: true)}
-  end
-
-  def handle_event("close_category_modal", _, socket) do
-    {:noreply, assign(socket, show_category_modal: false)}
-  end
-
-  def handle_event("validate", %{"expense" => attrs}, socket) do
+  def handle_event("validate_expense", %{"expense" => attrs}, socket) do
     changeset = Expense.changeset(%Expense{}, attrs)
     {:noreply, assign_expense_form(socket, Map.put(changeset, :action, :validate))}
   end
@@ -245,10 +239,10 @@ alias Svot.ExpenseCategory
           socket
           |> assign_category_form(changeset)
 
-        {:noreply, assign(socket, categories: categories, show_category_modal: false)}
+        {:noreply, assign(socket, categories: categories, show_modal: %{category: false, expense: false})}
 
       {:error, _changeset} ->
-        {:noreply, assign(socket, check_category_errors: true)}
+        {:noreply, assign(socket, check_errors: %{category: true, expense: false})}
     end
   end
 
@@ -267,10 +261,10 @@ alias Svot.ExpenseCategory
           socket
           |> assign_expense_form(changeset)
 
-        {:noreply, assign(socket, expenses: expenses, show_modal: false)}
+        {:noreply, assign(socket, expenses: expenses, show_modal: %{category: false, expense: false})}
 
       {:error, _changeset} ->
-        {:noreply, assign(socket, check_errors: true)}
+        {:noreply, assign(socket, check_errors: %{category: false, expense: true})}
     end
   end
 
@@ -278,7 +272,7 @@ alias Svot.ExpenseCategory
     form = to_form(changeset, as: "expense")
 
     if changeset.valid? do
-      assign(socket, expense_form: form, check_errors: false)
+      assign(socket, expense_form: form, check_errors: %{expense: false, category: false})
     else
       assign(socket, expense_form: form)
     end
@@ -288,7 +282,7 @@ alias Svot.ExpenseCategory
     form = to_form(changeset, as: "category")
 
     if changeset.valid? do
-      assign(socket, category_form: form, check_errors: false)
+      assign(socket, category_form: form, check_errors: %{expense: false, category: false})
     else
       assign(socket, category_form: form)
     end
