@@ -5,7 +5,7 @@ defmodule Svot.Category do
   schema "categories" do
     field :title, :string
 
-    belongs_to :user, Svot.User, foreign_key: :user_uuid, references: :uuid, type: :binary_id
+    belongs_to :user, Svot.Accounts.User, foreign_key: :user_uuid, references: :uuid, type: :binary_id
 
     timestamps(type: :utc_datetime)
   end
@@ -14,5 +14,6 @@ defmodule Svot.Category do
     category
     |> cast(attrs, [:title])
     |> validate_required([:title])
+    |> unique_constraint(:title, name: :unique_title_per_user)
   end
 end

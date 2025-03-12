@@ -89,6 +89,7 @@ defmodule Svot.Repo.Migrations.InitialMigration do
     create index(:expenses, [:user_uuid])
     create index(:income, [:user_uuid])
     create index(:categories, [:user_uuid])
+    create unique_index(:categories, [:title, :user_uuid], name: :unique_title_per_user)
 
     create index(:expense_categories, [:expense_uuid])
     create unique_index(:expense_categories, [:expense_uuid, :category_uuid])

@@ -24,13 +24,6 @@ defmodule SvotWeb.UserProfileLive do
           <h3 class="text-lg font-bold">Einkünfte</h3>
           <.icon name="hero-arrow-left-end-on-rectangle" class="h-12 w-12" />
         </.link>
-        <.link
-          navigate={~p"/stats"}
-          class="flex flex-row gap-2 justify-center items-center h-[100px] w-full rounded-md bg-white shadow-md"
-        >
-          <h3 class="text-lg font-bold">Statistiken</h3>
-          <.icon name="hero-presentation-chart-line" class="h-12 w-12" />
-        </.link>
       </div>
     </div>
     """

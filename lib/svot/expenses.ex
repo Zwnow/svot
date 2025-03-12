@@ -2,6 +2,7 @@ defmodule Svot.Expenses do
   import Ecto.{Changeset, Query}
   alias Svot.{Expense, Repo}
 
+  @spec create_expense(map(), String.t()) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
   def create_expense(attrs, user_uuid) do
     %Expense{}
     |> Expense.changeset(attrs)
