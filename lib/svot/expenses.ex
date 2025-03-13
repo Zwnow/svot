@@ -26,8 +26,13 @@ defmodule Svot.Expenses do
     end
   end
 
-  def list_user_expenses(user_uuid) do
-    Repo.all(from e in Expense, where: e.user_uuid == ^user_uuid, order_by: [desc: e.inserted_at])
+  def list_user_expenses(user_uuid, page \\ 1, page_size \\ 100) do
+    query = from e in Expense,
+      where: e.user_uuid == ^user_uuid,
+      order_by: [desc: e.inserted_at],
+      limit: ^page_size,
+      offset: ^((page - 1) * page_size)
+    Repo.all(query)
   end
 
   def delete_expense(id, user_uuid) do

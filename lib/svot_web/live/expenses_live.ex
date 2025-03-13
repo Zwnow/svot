@@ -190,6 +190,7 @@ alias Svot.ExpenseCategory
       socket
       |> assign(:expenses, [])
       |> assign(:categories, [])
+      |> assign(:page, 1)
       |> assign(:check_errors, %{category: false, expense: false})
       |> assign(:show_modal, %{category: false, expense: false})
       |> assign_expense_form(expense_changeset)
@@ -249,10 +250,14 @@ alias Svot.ExpenseCategory
   def handle_event("save_expense", %{"expense" => attrs}, socket) do
     case Expenses.create_expense(attrs, socket.assigns.current_user.uuid) do
       {:ok, %Expense{uuid: uuid}} ->
-        %{"categories" => categories} = attrs
-        Enum.each(categories, fn id -> 
-          ExpenseCategory.bind(%{"category_uuid" => id, "expense_uuid" => uuid})
-        end)
+
+        categories = Map.get(attrs, "categories", [])
+
+        if Enum.count(categories) > 0 do
+            Enum.each(categories, fn id -> 
+              ExpenseCategory.bind(%{"category_uuid" => id, "expense_uuid" => uuid})
+            end)
+        end
 
         expenses = Svot.Expenses.list_user_expenses(socket.assigns.current_user.uuid)
         changeset = Expense.changeset(%Expense{})
