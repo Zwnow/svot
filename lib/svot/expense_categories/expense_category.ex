@@ -24,7 +24,7 @@ defmodule Svot.ExpenseCategory do
 
   def bind(attrs) do
     %Svot.ExpenseCategory{}
-    |>changeset(attrs)
+    |> changeset(attrs)
     |> Repo.insert()
   end
 end

@@ -5,7 +5,10 @@ defmodule Svot.Category do
   schema "categories" do
     field :title, :string
 
-    belongs_to :user, Svot.Accounts.User, foreign_key: :user_uuid, references: :uuid, type: :binary_id
+    belongs_to :user, Svot.Accounts.User,
+      foreign_key: :user_uuid,
+      references: :uuid,
+      type: :binary_id
 
     timestamps(type: :utc_datetime)
   end

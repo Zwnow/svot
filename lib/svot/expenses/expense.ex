@@ -2,6 +2,8 @@ defmodule Svot.Expense do
   use Svot.Schema
   import Ecto.Changeset
 
+  alias Svot.Repo
+
   schema "expenses" do
     field :title, :string
     field :description, :string
@@ -22,6 +24,7 @@ defmodule Svot.Expense do
 
   def changeset(%Svot.Expense{} = expense, attrs \\ %{}) do
     expense
+    |> Repo.preload(:category)
     |> cast(attrs, [:title, :description, :amount, :interval])
     |> validate_required([:title, :interval, :amount], message: "Pflichtfeld")
     |> validate_number(:amount, greater_than: 0, message: "Der Betrag muss größer als 0 sein")
