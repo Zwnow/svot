@@ -25,8 +25,15 @@ defmodule Svot.Incomes do
     end
   end
 
-  def list_income_by_user(user_uuid) do
-    Repo.all(from i in Income, where: i.user_uuid == ^user_uuid, order_by: [desc: i.inserted_at])
+  def list_income_by_user(user_uuid, page \\ 1, page_size \\ 20) do
+    query =
+      from i in Income,
+        where: i.user_uuid == ^user_uuid,
+        order_by: [desc: i.inserted_at],
+        limit: ^page_size,
+        offset: ^((page - 1) * page_size)
+
+    Repo.all(query)
   end
 
   def delete_income(id, user_uuid) do

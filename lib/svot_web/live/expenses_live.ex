@@ -355,14 +355,17 @@ defmodule SvotWeb.ExpensesLive do
 
       "update" ->
         uuid = Map.get(params, "expense", "")
+
         if uuid != "" do
           expense = Expenses.get_expense(uuid, socket.assigns.current_user.uuid)
           update_changeset = Expense.changeset(expense)
+
           socket =
             socket
             |> assign_update_form(update_changeset)
             |> assign(update_uuid: expense.uuid)
             |> assign(show_modal: %{category: false, expense: false, update: true})
+
           {:noreply, socket}
         else
           {:noreply, socket}
@@ -403,7 +406,10 @@ defmodule SvotWeb.ExpensesLive do
           |> assign_category_form(changeset)
 
         {:noreply,
-         assign(socket, categories: categories, show_modal: %{category: false, expense: false, update: false})}
+         assign(socket,
+           categories: categories,
+           show_modal: %{category: false, expense: false, update: false}
+         )}
 
       {:error, _changeset} ->
         {:noreply, assign(socket, check_errors: %{category: true, expense: false, update: false})}
@@ -442,17 +448,26 @@ defmodule SvotWeb.ExpensesLive do
   end
 
   def handle_event("update_expense", %{"update" => attrs}, socket) do
-    case Expenses.update_expense(socket.assigns.update_uuid, socket.assigns.current_user.uuid, attrs) do
+    case Expenses.update_expense(
+           socket.assigns.update_uuid,
+           socket.assigns.current_user.uuid,
+           attrs
+         ) do
       {:ok, %Expense{uuid: uuid}} ->
         categories = Map.get(attrs, "categories", [])
 
         if Enum.count(categories) > 0 do
-          Svot.Repo.delete_all(from e in ExpenseCategory, where: e.expense_uuid == ^socket.assigns.update_uuid)
+          Svot.Repo.delete_all(
+            from e in ExpenseCategory, where: e.expense_uuid == ^socket.assigns.update_uuid
+          )
+
           Enum.each(categories, fn id ->
             ExpenseCategory.bind(%{"category_uuid" => id, "expense_uuid" => uuid})
           end)
         else
-          Svot.Repo.delete_all(from e in ExpenseCategory, where: e.expense_uuid == ^socket.assigns.update_uuid)
+          Svot.Repo.delete_all(
+            from e in ExpenseCategory, where: e.expense_uuid == ^socket.assigns.update_uuid
+          )
         end
 
         expenses = Svot.Expenses.list_user_expenses(socket.assigns.current_user.uuid)
@@ -517,8 +532,14 @@ defmodule SvotWeb.ExpensesLive do
 
   defp assign_update_form(socket, %Ecto.Changeset{} = changeset) do
     form = to_form(changeset, as: "update")
-    
-    new_data = Map.put(form.data, :categories, Enum.map(form.data.category, fn cat -> cat.category_uuid end))
+
+    new_data =
+      Map.put(
+        form.data,
+        :categories,
+        Enum.map(form.data.category, fn cat -> cat.category_uuid end)
+      )
+
     form = Map.put(form, :data, new_data)
 
     if changeset.valid? do
