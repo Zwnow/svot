@@ -1,5 +1,7 @@
 defmodule Svot.IncomeCategory do
   use Svot.Schema
+  import Ecto.Changeset
+  alias Svot.Repo
 
   @primary_key false
   schema "income_categories" do
@@ -12,5 +14,17 @@ defmodule Svot.IncomeCategory do
       foreign_key: :category_uuid,
       references: :uuid,
       type: :binary_id
+  end
+
+  def changeset(%Svot.IncomeCategory{} = income_category, attrs \\ %{}) do
+    income_category
+    |> cast(attrs, [:income_uuid, :category_uuid])
+    |> validate_required(attrs, [:income_uuid, :category_uuid])
+  end
+
+  def bind(attrs) do
+    %Svot.IncomeCategory{}
+    |> changeset(attrs)
+    |> Repo.insert()
   end
 end

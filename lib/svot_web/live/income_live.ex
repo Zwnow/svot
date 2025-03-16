@@ -59,10 +59,7 @@ defmodule SvotWeb.IncomeLive do
     ~H"""
     <div class="flex flex-col justify-center items-center">
       <div class="flex flex-row gap-4 w-full justify-center items-center">
-        <button
-          phx-click="open_modal_income"
-          class="rounded-md shadow-md bg-slate-700 p-2 text-white"
-        >
+        <button phx-click="open_modal_income" class="rounded-md shadow-md bg-slate-700 p-2 text-white">
           + Einkunft
         </button>
         <.create_category_modal {assigns} />
@@ -354,14 +351,17 @@ defmodule SvotWeb.IncomeLive do
 
       "update" ->
         uuid = Map.get(params, "income", "")
+
         if uuid != "" do
           income = Incomes.get_income(uuid, socket.assigns.current_user.uuid)
           update_changeset = Income.changeset(income)
+
           socket =
             socket
             |> assign_update_form(update_changeset)
             |> assign(update_uuid: income.uuid)
             |> assign(show_modal: %{category: false, income: false, update: true})
+
           {:noreply, socket}
         else
           {:noreply, socket}
@@ -402,7 +402,10 @@ defmodule SvotWeb.IncomeLive do
           |> assign_category_form(changeset)
 
         {:noreply,
-         assign(socket, categories: categories, show_modal: %{category: false, income: false, update: false})}
+         assign(socket,
+           categories: categories,
+           show_modal: %{category: false, income: false, update: false}
+         )}
 
       {:error, _changeset} ->
         {:noreply, assign(socket, check_errors: %{category: true, income: false, update: false})}
@@ -441,17 +444,26 @@ defmodule SvotWeb.IncomeLive do
   end
 
   def handle_event("update_income", %{"update" => attrs}, socket) do
-    case Incomes.update_income(socket.assigns.update_uuid, socket.assigns.current_user.uuid, attrs) do
+    case Incomes.update_income(
+           socket.assigns.update_uuid,
+           socket.assigns.current_user.uuid,
+           attrs
+         ) do
       {:ok, %Income{uuid: uuid}} ->
         categories = Map.get(attrs, "categories", [])
 
         if Enum.count(categories) > 0 do
-          Svot.Repo.delete_all(from ic in IncomeCategory, where: ic.income_uuid == ^socket.assigns.update_uuid)
+          Svot.Repo.delete_all(
+            from ic in IncomeCategory, where: ic.income_uuid == ^socket.assigns.update_uuid
+          )
+
           Enum.each(categories, fn id ->
             IncomeCategory.bind(%{"category_uuid" => id, "income_uuid" => uuid})
           end)
         else
-          Svot.Repo.delete_all(from ic in IncomeCategory, where: ic.income_uuid == ^socket.assigns.update_uuid)
+          Svot.Repo.delete_all(
+            from ic in IncomeCategory, where: ic.income_uuid == ^socket.assigns.update_uuid
+          )
         end
 
         income = Svot.Incomes.list_income_by_user(socket.assigns.current_user.uuid)
@@ -516,8 +528,14 @@ defmodule SvotWeb.IncomeLive do
 
   defp assign_update_form(socket, %Ecto.Changeset{} = changeset) do
     form = to_form(changeset, as: "update")
-    
-    new_data = Map.put(form.data, :categories, Enum.map(form.data.category, fn cat -> cat.category_uuid end))
+
+    new_data =
+      Map.put(
+        form.data,
+        :categories,
+        Enum.map(form.data.category, fn cat -> cat.category_uuid end)
+      )
+
     form = Map.put(form, :data, new_data)
 
     if changeset.valid? do
