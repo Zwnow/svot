@@ -21,11 +21,25 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import mermaid from "mermaid"
+
+// Mermaid
+let Hooks = {}
+Hooks.Mermaid = {
+    mounted() {
+        mermaid.initialize({ startOnLoad: true });
+    },
+    updated() {
+        mermaid.initialize({ startOnLoad: true });
+    },
+}
+// Mermaid
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken}
+    longPollFallbackMs: 2500,
+    params: {_csrf_token: csrfToken},
+    hooks: Hooks
 })
 
 // Show progress bar on live navigation and form submits
