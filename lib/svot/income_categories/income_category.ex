@@ -19,7 +19,7 @@ defmodule Svot.IncomeCategory do
   def changeset(%Svot.IncomeCategory{} = income_category, attrs \\ %{}) do
     income_category
     |> cast(attrs, [:income_uuid, :category_uuid])
-    |> validate_required(attrs, [:income_uuid, :category_uuid])
+    |> validate_required([:income_uuid, :category_uuid])
   end
 
   def bind(attrs) do

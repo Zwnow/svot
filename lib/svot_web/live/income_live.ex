@@ -458,7 +458,7 @@ defmodule SvotWeb.IncomeLive do
           )
 
           Enum.each(categories, fn id ->
-            IncomeCategory.bind(%{"category_uuid" => id, "income_uuid" => uuid})
+            IncomeCategory.bind(%{:category_uuid => id, :income_uuid => uuid})
           end)
         else
           Svot.Repo.delete_all(

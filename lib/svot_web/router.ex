@@ -18,7 +18,7 @@ defmodule SvotWeb.Router do
   end
 
   scope "/", SvotWeb do
-    pipe_through :browser
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     get "/", PageController, :home
   end
@@ -69,6 +69,7 @@ defmodule SvotWeb.Router do
       live "/profile", UserProfileLive, :render
       live "/expenses", ExpensesLive, :render
       live "/income", IncomeLive, :render
+      live "/income/distribution", IncomeDistributionLive, :render
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
     end
