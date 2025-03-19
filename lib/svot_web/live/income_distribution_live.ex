@@ -16,7 +16,7 @@ defmodule SvotWeb.IncomeDistributionLive do
       </div>
 
       <div class="flex flex-col gap-4 items-center p-2 w-full h-[700px] sm:h-full bg-slate-100 shadow-2xl rounded-md">
-        <pre id="diagram" class="mermaid" phx-hook="Mermaid" phx-update="ignore">
+        <pre id="diagram" class="mermaid" phx-hook="Mermaid">
           {diagram_test()}
         </pre>
       </div>

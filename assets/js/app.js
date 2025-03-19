@@ -28,10 +28,14 @@ let Hooks = {}
 Hooks.Mermaid = {
     mounted() {
         mermaid.initialize({ startOnLoad: true });
+        this.renderMermaid();
     },
     updated() {
-        mermaid.initialize({ startOnLoad: true });
+        this.renderMermaid();
     },
+    renderMermaid() {
+        mermaid.contentLoaded();
+    }
 }
 // Mermaid
 
