@@ -42,4 +42,18 @@ defmodule Svot.Incomes do
       income -> Repo.delete(income)
     end
   end
+
+  def sum_income(user_uuid) do
+    query =
+      from i in Income,
+        where: i.user_uuid == ^user_uuid,
+        group_by: i.interval,
+        select: {i.interval, sum(i.amount)}
+
+    Repo.all(query)
+  end
+
+  def calc_income_distribution(user_uuid) do
+
+  end
 end
