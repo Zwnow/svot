@@ -47,17 +47,8 @@ defmodule SvotWeb.IncomeDistributionLive do
 
     socket = 
       socket
-      |> assign(:income_diagram, "")
       |> assign(:datefilter, datefilter)
-      |> then(fn socket -> 
-        if connected?(socket) do
-          socket
-          |> assign_income_diagram(socket.assigns.datefilter)
-        else
-          socket
-        end
-      end)
-
+      |> assign_income_diagram(datefilter)
     {:ok, socket}
   end
 
@@ -68,7 +59,6 @@ defmodule SvotWeb.IncomeDistributionLive do
   end
 
   def assign_income_diagram(socket, filter) do
-    IO.inspect(filter)
     result = Incomes.sum_income(socket.assigns.current_user.uuid)
 
     diagram = "pie showData\n" <>
@@ -76,7 +66,16 @@ defmodule SvotWeb.IncomeDistributionLive do
         "\"#{title}\" : #{value}"
       end)
 
-    assign(socket, :income_diagram, diagram)
+    config = """
+      ---
+      config:
+        look: handDrawn
+        theme: neutral
+      ---
+      """
+
+    assign(socket, :income_diagram, config <> diagram)
+    |> IO.inspect()
   end
 
   def current_month_range do
@@ -87,14 +86,6 @@ defmodule SvotWeb.IncomeDistributionLive do
     {:ok, last_day} = NaiveDateTime.new(now.year, now.month, last_day_of_month, 23, 59, 59)
 
     {first_day, last_day}
-  end
-
-  defp date_to_string(date) do
-    if date == nil do
-      ""
-    else
-      Date.to_string(date)
-    end
   end
 end
 
