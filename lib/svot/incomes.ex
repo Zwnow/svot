@@ -43,10 +43,16 @@ defmodule Svot.Incomes do
     end
   end
 
-  def sum_income(user_uuid) do
+  def sum_income(user_uuid, %{"from" => from, "to" => to}) do
+
+    from_datetime = DateTime.new!(from, ~T[00:00:00], "Etc/UTC")
+    to_datetime = DateTime.new!(to, ~T[23:59:59], "Etc/UTC")
+
     query =
       from i in Income,
-        where: i.user_uuid == ^user_uuid,
+        where: i.user_uuid == ^user_uuid
+        and i.inserted_at >= ^from_datetime
+        and i.inserted_at <= ^to_datetime,
         group_by: i.interval,
         select: {i.interval, sum(i.amount)}
 

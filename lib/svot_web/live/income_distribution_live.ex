@@ -18,19 +18,28 @@ defmodule SvotWeb.IncomeDistributionLive do
       <div class="flex flex-col gap-4 items-center p-2 w-full h-[700px] sm:h-full bg-slate-100 shadow-2xl rounded-md">
         <.form
           for={@datefilter}
-          phx-change="temp"
-          class="flex flex-row gap-2"
+          phx-change="update_datefilter"
+          class="flex flex-col gap-2"
           >
-          <.input
+          <div
+            class="flex flex-row gap-2"
+            >
+            <.input
             type="date"
             name="from"
             value={@datefilter["from"]}
             />
-          <.input
+            <.input
             type="date"
             name="to"
             value={@datefilter["to"]}
             />
+          </div>
+          <button
+            phx-click="update_diagram"
+            type="button">
+            Update
+          </button>
         </.form>
 
         <pre id="diagram" class="mermaid" phx-hook="Mermaid">
@@ -52,14 +61,25 @@ defmodule SvotWeb.IncomeDistributionLive do
     {:ok, socket}
   end
 
-  def handle_event("temp", attrs, socket) do
-    IO.inspect(attrs)
+  def handle_event("update_diagram", attrs, socket) do
+    socket =
+      socket
+      |> assign_income_diagram(socket.assigns.datefilter)
 
     {:noreply, socket}
   end
 
+  def handle_event("update_datefilter", attrs, socket) do
+    {:ok, from_date} = Date.from_iso8601(attrs["from"])
+    {:ok, to_date} = Date.from_iso8601(attrs["to"])
+
+    datefilter = %{"from" => from_date, "to" => to_date}
+
+    {:noreply, assign(socket, :datefilter, datefilter)}
+  end
+
   def assign_income_diagram(socket, filter) do
-    result = Incomes.sum_income(socket.assigns.current_user.uuid)
+    result = Incomes.sum_income(socket.assigns.current_user.uuid, filter)
 
     diagram = "pie showData\n" <>
       Enum.map_join(result, "\n", fn {title, value} ->
@@ -75,7 +95,6 @@ defmodule SvotWeb.IncomeDistributionLive do
       """
 
     assign(socket, :income_diagram, config <> diagram)
-    |> IO.inspect()
   end
 
   def current_month_range do
